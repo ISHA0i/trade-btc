@@ -1,33 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Table, Tag, Spin, Alert } from 'antd';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Card, Table, Tag, Spin, Alert, Button } from 'antd';
 
 const TradingSignals = () => {
   const [signals, setSignals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchSignals = async () => {
-      try {
-        setError(null);
-        const response = await fetch('http://localhost:3001/api/signals');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setSignals(data);
-      } catch (error) {
-        console.error('Error fetching signals:', error);
-        setError('Failed to fetch trading signals. Please try again later.');
-      } finally {
-        setLoading(false);
+  const fetchSignals = useCallback(async () => {
+    try {
+      setError(null);
+      setLoading(true);
+      const response = await fetch('http://localhost:3001/api/signals');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
+      const data = await response.json();
+      setSignals(data);
+    } catch (error) {
+      console.error('Error fetching signals:', error);
+      setError('Failed to fetch trading signals. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
+  useEffect(() => {
     fetchSignals();
     const interval = setInterval(fetchSignals, 60000); // Refresh every minute
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchSignals]);
 
   const columns = [
     {
@@ -65,7 +66,8 @@ const TradingSignals = () => {
   ];
 
   return (
-    <Card title="Trading Signals" style={{ margin: '24px' }}>
+    <Card title="Trading Signals" style={{ margin: '24px' }}
+      extra={<Button onClick={fetchSignals} loading={loading}>Refresh</Button>}>
       {error && (
         <Alert
           message="Error"
