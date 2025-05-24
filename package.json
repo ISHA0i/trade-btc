@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@ant-design/icons": "^5.0.1",
-    "antd": "^5.0.0",
+    "@ant-design/icons": "^5.6.1",
+    "antd": "^5.25.2",
     "cors": "^2.8.5",
     "crypto-trading-signals-client": "file:",
     "dotenv": "^16.5.0",

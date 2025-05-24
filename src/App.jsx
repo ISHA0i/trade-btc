@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Layout, Select, Typography, Space, theme } from 'antd';
 import { LineChartOutlined, DashboardOutlined } from '@ant-design/icons';
-import TradingSignals from './components/TradingSignals';
 import TechnicalIndicators from './components/TechnicalIndicators';
+import RiskRewardAnalysis from './components/RiskRewardAnalysis';
 import 'antd/dist/reset.css';
 
 const { Header, Content } = Layout;
@@ -59,8 +59,8 @@ function App() {
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
           gap: '24px'
         }}>
-          <TradingSignals />
           <TechnicalIndicators symbol={selectedSymbol} />
+          <RiskRewardAnalysis symbol={selectedSymbol} />
         </div>
       </Content>
     </Layout>

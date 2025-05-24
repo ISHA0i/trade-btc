@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Spin, Alert, Typography, Tag, Space, Statistic, Row, Col } from 'antd';
+import { Card, Spin, Alert, Typography, Tag, Space, Statistic, Row, Col } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined, LineChartOutlined } from '@ant-design/icons';
 import { theme } from 'antd';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 const { useToken } = theme;
 
 const TechnicalIndicators = ({ symbol }) => {
@@ -32,7 +32,7 @@ const TechnicalIndicators = ({ symbol }) => {
     };
 
     fetchIndicators();
-    const interval = setInterval(fetchIndicators, 60000); // Refresh every minute
+    const interval = setInterval(fetchIndicators, 60000);
     return () => clearInterval(interval);
   }, [symbol]);
 
@@ -56,7 +56,6 @@ const TechnicalIndicators = ({ symbol }) => {
 
     const formattedData = [];
 
-    // MACD
     if (indicators.macd?.macdLine?.length > 0 && indicators.macd?.signalLine?.length > 0) {
       const lastIndex = indicators.macd.macdLine.length - 1;
       const macdValue = indicators.macd.macdLine[lastIndex];
@@ -73,7 +72,6 @@ const TechnicalIndicators = ({ symbol }) => {
       }
     }
 
-    // RSI
     if (indicators.stochRSI?.k?.length > 0) {
       const lastIndex = indicators.stochRSI.k.length - 1;
       const rsiValue = indicators.stochRSI.k[lastIndex];
@@ -90,7 +88,6 @@ const TechnicalIndicators = ({ symbol }) => {
       }
     }
 
-    // ADX
     if (indicators.adx?.adx?.length > 0) {
       const lastIndex = indicators.adx.adx.length - 1;
       const adxValue = indicators.adx.adx[lastIndex];
