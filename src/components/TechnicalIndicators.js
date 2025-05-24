@@ -88,6 +88,23 @@ const TechnicalIndicators = ({ symbol }) => {
       }
     }
 
+    if (indicators.bollingerBands?.middleBand?.length > 0) {
+      const lastIndex = indicators.bollingerBands.middleBand.length - 1;
+      const middleBand = indicators.bollingerBands.middleBand[lastIndex];
+      const upperBand = indicators.bollingerBands.upperBand[lastIndex];
+      const lowerBand = indicators.bollingerBands.lowerBand[lastIndex];
+      
+      if (middleBand !== null && upperBand !== null && lowerBand !== null) {
+        formattedData.push({
+          key: 'bb',
+          name: 'Bollinger Bands',
+          value: middleBand.toFixed(2),
+          signal: `Upper: ${upperBand.toFixed(2)}, Lower: ${lowerBand.toFixed(2)}`,
+          trend: 'neutral'
+        });
+      }
+    }
+
     if (indicators.adx?.adx?.length > 0) {
       const lastIndex = indicators.adx.adx.length - 1;
       const adxValue = indicators.adx.adx[lastIndex];
@@ -144,6 +161,19 @@ const TechnicalIndicators = ({ symbol }) => {
     </Card>
   );
 
+  if (error) {
+    return (
+      <Card style={{ margin: '24px' }}>
+        <Alert
+          message="Error"
+          description={error}
+          type="error"
+          showIcon
+        />
+      </Card>
+    );
+  }
+
   return (
     <Card
       title={
@@ -158,15 +188,6 @@ const TechnicalIndicators = ({ symbol }) => {
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
       }}
     >
-      {error && (
-        <Alert
-          message="Error"
-          description={error}
-          type="error"
-          showIcon
-          style={{ marginBottom: '16px' }}
-        />
-      )}
       <Spin spinning={loading}>
         <div style={{ display: 'grid', gap: '16px' }}>
           {formatIndicators().map(renderIndicatorCard)}

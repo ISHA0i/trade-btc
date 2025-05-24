@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Statistic, Space, Alert, Spin } from 'antd';
-import { DollarOutlined, SafetyOutlined, LineChartOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Statistic, Space, Alert, Spin, Typography } from 'antd';
+import { DollarOutlined, SafetyOutlined, LineChartOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { theme } from 'antd';
 
 const { useToken } = theme;
+const { Text } = Typography;
 
 const RiskRewardAnalysis = ({ symbol, indicators }) => {
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentEntryPrice, setCurrentEntryPrice] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(null);
   const { token } = useToken();
 
   useEffect(() => {
@@ -26,6 +29,7 @@ const RiskRewardAnalysis = ({ symbol, indicators }) => {
           throw new Error('Invalid response format');
         }
         setAnalysis(data);
+        setLastUpdated(new Date());
       } catch (error) {
         console.error('Error fetching risk/reward analysis:', error);
         setError(error.message || 'Failed to fetch risk/reward analysis');
@@ -35,8 +39,27 @@ const RiskRewardAnalysis = ({ symbol, indicators }) => {
     };
 
     fetchAnalysis();
-    const interval = setInterval(fetchAnalysis, 60000);
+    const interval = setInterval(fetchAnalysis, 10000);
     return () => clearInterval(interval);
+  }, [symbol]);
+
+  useEffect(() => {
+    const updateEntryPrice = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/price/${symbol.toLowerCase()}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setCurrentEntryPrice(data.price);
+      } catch (error) {
+        console.error('Error fetching current price:', error);
+      }
+    };
+
+    updateEntryPrice();
+    const priceInterval = setInterval(updateEntryPrice, 2000);
+    return () => clearInterval(priceInterval);
   }, [symbol]);
 
   const calculateStrategyConfidence = () => {
@@ -90,12 +113,25 @@ const RiskRewardAnalysis = ({ symbol, indicators }) => {
     return (
       <Row gutter={[16, 16]}>
         <Col span={24}>
-          <Card title="Position Analysis" style={{ marginBottom: '16px' }}>
+          <Card 
+            title="Position Analysis" 
+            style={{ marginBottom: '16px' }}
+            extra={
+              lastUpdated && (
+                <Space>
+                  <ClockCircleOutlined />
+                  <Text type="secondary">
+                    Updated: {lastUpdated.toLocaleTimeString()}
+                  </Text>
+                </Space>
+              )
+            }
+          >
             <Row gutter={[16, 16]}>
               <Col span={8}>
                 <Statistic
                   title="Entry Price"
-                  value={analysis.currentPrice}
+                  value={currentEntryPrice || analysis.currentPrice}
                   precision={2}
                   prefix="$"
                 />
